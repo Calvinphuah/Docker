@@ -1,54 +1,50 @@
 const express = require("express");
+const cors = require("cors");
 const pool = require("./db");
 const port = 5000;
 
 // Initialize Express
 const app = express();
 
-// Allow the server to receive json data
+// Middleware
 app.use(express.json());
+app.use(cors()); // Allow frontend to fetch data
 
 // Routes
 app.get("/", async (req, res) => {
-  // Returns entire table
-  // Assign to a variable and return
-  // res.status(200).send({ message: "Hello World" });
   try {
-    // Postgres methods
     const data = await pool.query("SELECT * FROM schools");
-    res.status(200).send(data.rows);
+    res.status(200).json(data.rows);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.sendStatus(500);
   }
 });
 
 app.post("/", async (req, res) => {
-  const { name, location } = req.body;
+  const { name, address } = req.body;
   try {
-    // Postgres methods
     await pool.query("INSERT INTO schools (name, address) VALUES ($1, $2)", [
       name,
-      location,
+      address,
     ]);
-    res.status(200).send({ message: "Successfully added child" });
+    res.status(200).json({ message: "Successfully added entry" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.sendStatus(500);
   }
 });
 
 app.get("/setup", async (req, res) => {
   try {
-    // Postgres methods
     await pool.query(
-      "CREATE TABLE schools( id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, address VARCHAR(100) NOT NULL)"
+      "CREATE TABLE IF NOT EXISTS schools( id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, address VARCHAR(100) NOT NULL)"
     );
-    res.status(200).send({ message: "Successfully created table" });
+    res.status(200).json({ message: "Successfully created table" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.sendStatus(500);
   }
 });
 
-app.listen(port, () => console.log(`Server has started on port: ${port}`));
+app.listen(port, () => console.log(`🚀 Server running on port: ${port}`));
