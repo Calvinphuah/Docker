@@ -1,18 +1,32 @@
 import { useEffect, useState } from "react";
 
 function App() {
-  const [blogs, setBlogs] = useState([]);
+  const [data, setData] = useState([]);
+
   useEffect(() => {
-    fetch("http://localhost:4000/")
+    fetch("http://localhost:5000/")
       .then((res) => res.json())
-      .then((data) => setBlogs(data));
+      .then((data) => {
+        console.log("Fetched Data:", data);
+        setData(data);
+      })
+      .catch((err) => console.error("Error fetching data:", err));
   }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>all blogs</h1>
-        {blogs && blogs.map((blog) => <div key={blog.id}>{blog.title}</div>)}
+        <h1>People List</h1>
+        {data.length > 0 ? (
+          data.map((person) => (
+            <div key={person.id} className="card">
+              <h2>{person.name}</h2>
+              <p>{person.address}</p>
+            </div>
+          ))
+        ) : (
+          <p>Loading data...</p>
+        )}
       </header>
     </div>
   );

@@ -1,21 +1,12 @@
 services:
-  api:
-    build: ./api
-    container_name: api_c
-    ports:
-      - "4000:4000"
-    volumes:
-      - ./api:/app
-      - /app/node_modules
-
   react:
     build: ./react
     container_name: react_c
     ports:
       - "3000:3000"
-    # volumes:
-    #   - ./react:/app
-    #   - /app/node_modules
+    volumes:
+      - ./react:/app
+      - /app/node_modules
     stdin_open: true
     tty: true
 
